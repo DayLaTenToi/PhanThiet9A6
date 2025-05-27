@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký chuyến đi Phan Thiết (08/06–10/06)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Reset and Base Styles */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: "Be Vietnam Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: url("https://ticotravel.com.vn/wp-content/uploads/2022/04/bien-phan-thiet-1.jpg") center/cover no-repeat fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden; /* Prevent body scroll on desktop */
+      line-height: 1.6;
+      color: #1d1d1f;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Intro Screen Overlay */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      opacity: 1;
+      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 100;
+    }
+    .overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Intro Content */
+    .intro {
+      background: transparent;
+      padding: 40px 60px;
+      text-align: center;
+      max-width: 680px;
+      transform: translateY(0);
+      opacity: 1;
+      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .overlay.hidden .intro {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+    .intro h2 {
+      font-size: 3rem;
+      margin-bottom: 24px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.25;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+    .intro .description {
+      font-size: 1.2rem;
+      color: #f5f5f7;
+      margin-bottom: 40px;
+      line-height: 1.65;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+    .btn-start {
+      padding: 16px 40px;
+      border: none;
+      border-radius: 12px;
+      background: #fff;
+      color: #0071e3;
+      font-size: 1.15rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+    }
+    .btn-start:hover {
+      background: #f5f5f7;
+      transform: scale(1.04);
+    }
+    .btn-start:active {
+        transform: scale(0.97);
+        background: #e8e8ed;
+    }
+
+    /* Form Container */
+    .form-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 50;
+        padding: 20px;
+    }
+    .form-wrapper.visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .form-container {
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 50px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.2);
+      color: #1d1d1f;
+      max-height: 90vh; /* Limit height on desktop */
+      overflow-y: auto; /* Enable scroll within container on desktop */
+      position: relative;
+      transform: scale(0.92);
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .form-container::-webkit-scrollbar {
+        width: 6px;
+    }
+    .form-container::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .form-container::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+    }
+    .form-wrapper.visible .form-container {
+        transform: scale(1);
+    }
+    .form-container h2 {
+      text-align: center;
+      margin: 0 0 2.5rem;
+      font-weight: 700;
+      font-size: 2rem;
+      color: #1d1d1f;
+    }
+
+    /* Progress Indicator */
+    .progress {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 3rem;
+    }
+    .progress-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background-color: #d2d2d7;
+      transition: background-color 0.4s ease, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .progress-dot-active {
+      background-color: #0071e3;
+      transform: scale(1.15);
+    }
+
+    /* Step Panels & Animation */
+    .steps-container {
+        position: relative;
+        /* Removed overflow: hidden to not interfere with potential parent scroll */
+        min-height: 320px; /* Adjust as needed */
+        margin-bottom: 1rem;
+    }
+    .step {
+      position: absolute;
+      width: 100%;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(35px);
+      transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s 0.55s;
+    }
+    .step.step-active {
+      position: relative;
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+      transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s 0s;
+    }
+    .step.step-previous {
+        transform: translateX(-35px);
+        transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s 0.55s;
+    }
+
+    /* Form Fields */
+    .field { margin-bottom: 1.8rem; }
+    .field label {
+      display: block;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #3a3a3c;
+    }
+    .field label .required { color: #ff453a; margin-left: 4px; font-weight: 500; }
+    .field input[type="text"], .field input[type="tel"], .field input[type="date"], .field select, .field textarea {
+      width: 100%;
+      padding: 15px 18px;
+      border: 1px solid #dcdce1;
+      border-radius: 12px;
+      background: rgba(242, 242, 247, 0.8);
+      color: #1d1d1f;
+      font-size: 1.05rem;
+      font-family: inherit;
+      transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .field input::placeholder, .field textarea::placeholder {
+        color: #8e8e93;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: #0071e3;
+      background-color: rgba(255, 255, 255, 0.95);
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.2);
+    }
+    .field textarea { resize: vertical; min-height: 100px; }
+    .validation-error {
+        display: none;
+        color: #ff453a;
+        font-size: 0.9rem;
+        margin-top: 8px;
+        font-weight: 500;
+    }
+    .field input.invalid, .field textarea.invalid, .field select.invalid {
+        border-color: #ff453a !important;
+        background-color: rgba(255, 235, 230, 0.8);
+    }
+    .field input.invalid:focus, .field textarea.invalid:focus, .field select.invalid:focus {
+        box-shadow: 0 0 0 4px rgba(255, 69, 58, 0.2);
+    }
+    input[type="hidden"].invalid + .validation-error {
+        display: block;
+    }
+
+    /* Member Group */
+    .member-group {
+      border: 1px solid #eaeaef;
+      padding: 25px;
+      border-radius: 16px;
+      margin-bottom: 25px;
+      background: rgba(248, 248, 250, 0.85);
+      transition: background-color 0.3s ease;
+    }
+    .member-group h3 {
+      margin: 0 0 20px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #1d1d1f;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eaeaef;
+    }
+
+    /* Quantity Control */
+    .quantity { display: flex; align-items: center; gap: 12px; }
+    .quantity button {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #dcdce1;
+      background: #fff;
+      color: #0071e3;
+      font-size: 1.8rem;
+      font-weight: 400;
+      cursor: pointer;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .quantity button:hover { background-color: #f5f5f7; box-shadow: 0 3px 6px rgba(0,0,0,0.08); }
+    .quantity button:active { background-color: #e8e8ed; transform: scale(0.94); box-shadow: none; }
+    .quantity .qty-input {
+      width: 60px;
+      height: 40px;
+      border: 1px solid #dcdce1;
+      text-align: center;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      background: rgba(242, 242, 247, 0.8);
+      appearance: textfield;
+      -moz-appearance: textfield;
+      padding: 0 5px;
+    }
+    .quantity .qty-input:focus {
+        border-color: #0071e3;
+        background-color: rgba(255, 255, 255, 0.95);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.2);
+    }
+
+    /* Redesigned Toggle Group */
+    .toggle-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+    }
+    .toggle-btn {
+      flex: 1;
+      padding: 14px 20px;
+      border: 1.5px solid #dcdce1;
+      background: rgba(248, 248, 250, 0.8);
+      color: #3a3a3c;
+      cursor: pointer;
+      font-size: 1.05rem;
+      font-weight: 500;
+      text-align: center;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      border-radius: 12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .toggle-btn.active {
+      background: #0071e3;
+      color: #fff;
+      border-color: #0071e3;
+      font-weight: 600;
+      box-shadow: 0 3px 8px rgba(0, 113, 227, 0.2);
+    }
+    .toggle-btn:not(.active):hover {
+        border-color: #c7c7cc;
+        background-color: rgba(242, 242, 247, 0.9);
+    }
+
+    /* Navigation Buttons */
+    .buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1.8rem; border-top: 1px solid #eaeaef; }
+    .btn {
+      padding: 14px 32px;
+      border: none;
+      border-radius: 12px;
+      background: #0071e3;
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.25s ease, transform 0.18s ease, filter 0.25s ease;
+    }
+    .btn#prevBtn {
+        background-color: #e8e8ed;
+        color: #1d1d1f;
+        font-weight: 500;
+    }
+    .btn#prevBtn:hover {
+        background-color: #dcdce1;
+    }
+    .btn:disabled {
+      background: #a5cdf1;
+      color: #f0f0f5;
+      cursor: default;
+      transform: none;
+      filter: saturate(0.7);
+    }
+    .btn#prevBtn:disabled {
+        background-color: #f5f5f7;
+        color: #ababab;
+        filter: none;
+    }
+    .btn:not(:disabled):hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+    .btn:not(:disabled):active {
+        transform: translateY(0px);
+        filter: brightness(0.92);
+        transition-duration: 0.1s;
+    }
+
+    /* Modals */
+    .modal {
+      display: flex;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(12px) saturate(160%);
+      -webkit-backdrop-filter: blur(12px) saturate(160%);
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.45s ease, visibility 0s 0.45s;
+    }
+    .modal.active {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.45s ease, visibility 0s 0s;
+    }
+    .modal-content {
+      background: rgba(253, 253, 253, 0.96);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      padding: 35px 45px;
+      border-radius: 24px;
+      text-align: center;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+      transform: scale(0.9);
+      transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+      max-width: 420px;
+      width: 90%;
+    }
+    .modal.active .modal-content {
+        transform: scale(1);
+    }
+    .modal-content h3 {
+      margin: 0 0 18px;
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: #1d1d1f;
+    }
+    .modal-content p {
+        margin-bottom: 30px;
+        color: #515154;
+        font-size: 1.05rem;
+        line-height: 1.6;
+    }
+    .modal-content button {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 10px;
+      background: #0071e3;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+    }
+    .modal-content button:hover { background-color: #005bb5; transform: scale(1.05); }
+    .modal-content button:active { transform: scale(1); background-color: #004c9a; }
+
+    /* Utility */
+    .required { color: #ff453a; margin-left: 3px; font-weight: normal; }
+
+    /* --- Responsive Adjustments --- */
+    @media (max-width: 768px) {
+        body {
+            /* Allow body to scroll on mobile */
+            overflow-y: auto;
+            /* Ensure content starts from top */
+            align-items: flex-start;
+        }
+        .form-wrapper {
+            /* Allow wrapper to take full height for scrolling */
+            position: relative; /* Change from fixed */
+            height: auto;
+            min-height: 100%; /* Ensure it can fill screen */
+            padding: 15px;
+            align-items: flex-start;
+        }
+        .form-container {
+            /* Remove max-height to allow natural growth */
+            max-height: none;
+            /* Adjust margin for better spacing */
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 30px 25px;
+            border-radius: 24px;
+            /* Ensure container itself doesn't scroll internally */
+            overflow-y: visible;
+        }
+        .intro h2 { font-size: 2.4rem; }
+        .intro .description { font-size: 1.1rem; }
+        .form-container h2 { font-size: 1.6rem; }
+        .progress { margin-bottom: 2rem; }
+        .buttons { flex-direction: column-reverse; gap: 15px; }
+        .btn { width: 100%; padding: 15px; }
+        .toggle-group { width: 100%; display: flex; flex-direction: column; gap: 10px; } /* Stack toggle buttons vertically */
+        .modal-content { padding: 30px 25px; border-radius: 18px; }
+    }
+    @media (max-width: 480px) {
+        .intro { padding: 30px; }
+        .intro h2 { font-size: 2rem; }
+        .intro .description { font-size: 1rem; }
+        .btn-start { padding: 14px 30px; font-size: 1.05rem; }
+        .form-container { padding: 25px 20px; border-radius: 20px; }
+        .form-container h2 { font-size: 1.5rem; }
+        .field label { font-size: 0.95rem; }
+        .field input[type="text"], .field input[type="tel"], .field input[type="date"], .field select, .field textarea {
+            padding: 14px 16px;
+            font-size: 1rem;
+        }
+        .member-group { padding: 20px; }
+        .member-group h3 { font-size: 1.1rem; }
+        .toggle-btn { padding: 12px 15px; font-size: 1rem; }
+        .modal-content { padding: 25px 20px; }
+        .modal-content h3 { font-size: 1.3rem; }
+        .modal-content p { font-size: 1rem; }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Intro Screen -->
+  <div id="introScreen" class="overlay">
+    <div class="intro">
+      <h2>Đăng ký đi Phan Thiết 9A6</h2>
+      <p class="description">Chuyến đi Phan Thiết dành cho lớp 9A6 từ ngày 08/06 đến 10/06 sẽ mang đến trải nghiệm khám phá bãi biển Mũi Né, đồi cát bay, tham quan Lầu Ông Hoàng và thưởng thức hải sản tươi ngon cùng các hoạt động team-building sôi động.</p>
+      <button id="btnStart" class="btn-start">Bắt đầu</button>
+    </div>
+  </div>
+
+  <!-- Form Screen -->
+  <div class="form-wrapper" id="formWrapper">
+    <div class="form-container" id="formContainer">
+      <h2>Đăng ký chuyến đi Phan Thiết</h2>
+
+      <!-- Progress Dots -->
+      <div class="progress" id="progressIndicator">
+        <!-- Dots will be generated by JS -->
+      </div>
+
+      <!-- Form Steps -->
+      <form id="tripForm" novalidate>
+        <div class="steps-container">
+          <!-- Step 1: Student Info -->
+          <div class="step step-active" data-step="1">
+            <div class="field">
+              <label for="studentName">Họ và tên học sinh<span class="required">*</span></label>
+              <input type="text" id="studentName" name="student_name" required>
+              <div class="validation-error">Vui lòng nhập tên học sinh.</div>
+            </div>
+          </div>
+
+          <!-- Step 2: Member Info -->
+          <div class="step" data-step="2">
+            <div class="field">
+              <label for="numPeople">Có bao nhiêu người đi (bao gồm học sinh)?<span class="required">*</span></label>
+              <div class="quantity">
+                <button type="button" id="minusBtn" aria-label="Giảm số người">−</button>
+                <input type="text" id="numPeople" name="num_people" class="qty-input" value="1" required readonly>
+                <button type="button" id="plusBtn" aria-label="Tăng số người">＋</button>
+              </div>
+            </div>
+            <div id="membersInfo" style="margin-top: 25px;">
+              <!-- Member fields will be generated by JS -->
+            </div>
+          </div>
+
+          <!-- Step 3: Transportation -->
+          <div class="step" data-step="3">
+            <div class="field">
+              <label>Gia đình có đi chung xe với ban tổ chức không?<span class="required">*</span></label>
+              <!-- Redesigned Toggle Buttons -->
+              <div class="toggle-group" role="group" aria-label="Chọn đi chung xe">
+                <button type="button" class="toggle-btn" data-value="yes">Có, đi chung xe</button>
+                <button type="button" class="toggle-btn" data-value="no">Không, tự túc di chuyển</button>
+              </div>
+              <input type="hidden" id="rideSelect" name="ride_with_organizer" required>
+              <div class="validation-error">Vui lòng chọn phương án di chuyển.</div>
+            </div>
+          </div>
+
+          <!-- Step 4: Contact & Comments -->
+          <div class="step" data-step="4">
+            <div class="field">
+              <label for="contactPhone">Số điện thoại liên hệ<span class="required">*</span></label>
+              <input type="tel" id="contactPhone" name="contact_phone" placeholder="09xxxxxxxx" required pattern="[0-9]{10,11}">
+              <div class="validation-error">Vui lòng nhập số điện thoại hợp lệ (10-11 số).</div>
+            </div>
+             <div class="field">
+              <label for="comments">Ý kiến/Ghi chú thêm (không bắt buộc)</label>
+              <textarea id="comments" name="comments" rows="4" placeholder="Ví dụ: Dị ứng hải sản, cần hỗ trợ đặc biệt..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="buttons">
+          <button type="button" class="btn" id="prevBtn">Quay lại</button>
+          <button type="button" class="btn" id="nextBtn">Tiếp theo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Warning Modal -->
+  <div id="warningModal" class="modal">
+    <div class="modal-content">
+      <h3>Thông tin chưa đầy đủ</h3>
+      <p>Vui lòng điền tất cả các trường bắt buộc (*) trong bước này.</p>
+      <button id="closeWarn">Đã hiểu</button>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="modal">
+    <div class="modal-content">
+      <h3>Đăng ký thành công!</h3>
+      <p>Cảm ơn bạn đã hoàn tất đăng ký. Thông tin đã được gửi đi.</p>
+      <button id="closeModal">Hoàn tất</button>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+   <div id="errorModal" class="modal">
+    <div class="modal-content">
+      <h3>Đã xảy ra lỗi</h3>
+      <p>Không thể gửi đăng ký của bạn lúc này. Vui lòng thử lại sau hoặc liên hệ ban tổ chức.</p>
+      <button id="closeError">Đóng</button>
+    </div>
+  </div>
+
+  <script>
+    // --- DOM Elements --- 
+    const introScreen = document.getElementById("introScreen");
+    const btnStart = document.getElementById("btnStart");
+    const formWrapper = document.getElementById("formWrapper");
+    const formContainer = document.getElementById("formContainer");
+    const tripForm = document.getElementById("tripForm");
+    const stepsContainer = document.querySelector(".steps-container");
+    const steps = Array.from(document.querySelectorAll(".step"));
+    const progressIndicator = document.getElementById("progressIndicator");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const warningModal = document.getElementById("warningModal");
+    const successModal = document.getElementById("successModal");
+    const errorModal = document.getElementById("errorModal");
+    const closeWarn = document.getElementById("closeWarn");
+    const closeModal = document.getElementById("closeModal");
+    const closeError = document.getElementById("closeError");
+    const plusBtn = document.getElementById("plusBtn");
+    const minusBtn = document.getElementById("minusBtn");
+    const numPeopleInput = document.getElementById("numPeople");
+    const membersInfoContainer = document.getElementById("membersInfo");
+    const rideSelectInput = document.getElementById("rideSelect");
+    const toggleBtns = document.querySelectorAll(".toggle-btn");
+
+    // --- State --- 
+    let currentStepIndex = 0;
+    let progressDots = [];
+    const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4_KvmG96wbK04XDpG0nhmkEb49bs9xYFCbV2dvIVHS-2ryT77weO1ZIuabPA1gQQSIA/exec"; // Replace with your actual URL
+
+    // --- Functions --- 
+
+    function initializeForm() {
+      progressIndicator.innerHTML = "";
+      progressDots = [];
+      steps.forEach((step, index) => {
+        const dot = document.createElement("div");
+        dot.classList.add("progress-dot");
+        if (index === 0) {
+          dot.classList.add("progress-dot-active");
+        }
+        progressIndicator.appendChild(dot);
+        progressDots.push(dot);
+      });
+      updateNavigationButtons();
+      updateMembers(parseInt(numPeopleInput.value, 10));
+      steps.forEach((step, index) => step.classList.toggle("step-active", index === 0));
+      addValidationListeners(tripForm);
+    }
+
+    function showForm() {
+      introScreen.classList.add("hidden");
+      formWrapper.classList.add("visible");
+      updateNavigationButtons();
+    }
+
+    function hideForm() {
+        formWrapper.classList.remove("visible");
+        introScreen.classList.remove("hidden");
+    }
+
+    function resetForm() {
+      tripForm.reset();
+      currentStepIndex = 0;
+      updateStepClasses(null);
+      updateProgressIndicator();
+      numPeopleInput.value = "1";
+      updateMembers(1);
+      toggleBtns.forEach(btn => btn.classList.remove("active"));
+      rideSelectInput.value = "";
+      clearAllValidationErrors();
+      updateNavigationButtons();
+    }
+
+    function updateProgressIndicator() {
+      progressDots.forEach((dot, index) => {
+        dot.classList.toggle("progress-dot-active", index === currentStepIndex);
+      });
+    }
+
+    function updateStepClasses(previousIndex) {
+        steps.forEach((step, index) => {
+            const isActive = index === currentStepIndex;
+            const wasActive = index === previousIndex;
+            step.classList.toggle("step-active", isActive);
+            step.classList.remove("step-previous");
+            if (wasActive && previousIndex !== null && currentStepIndex > previousIndex) {
+                step.classList.add("step-previous");
+            }
+        });
+    }
+
+    function updateNavigationButtons() {
+      prevBtn.disabled = currentStepIndex === 0;
+      nextBtn.disabled = false;
+      nextBtn.textContent = currentStepIndex === steps.length - 1 ? "Gửi đăng ký" : "Tiếp theo";
+    }
+
+    function updateMembers(count) {
+      membersInfoContainer.innerHTML = "";
+      const studentNameInput = document.getElementById("studentName");
+      for (let i = 1; i <= count; i++) {
+        const memberDiv = document.createElement("div");
+        memberDiv.classList.add("member-group");
+        memberDiv.innerHTML = `
+          <h3>Thông tin người thứ ${i} ${i === 1 ? "(Học sinh)" : ""}</h3>
+          <div class="field">
+            <label for="member_${i}_name">Họ và tên<span class="required">*</span></label>
+            <input type="text" id="member_${i}_name" name="member_${i}_name" required>
+            <div class="validation-error">Vui lòng nhập tên.</div>
+          </div>
+          <div class="field">
+            <label for="member_${i}_id">Số CCCD/CMND<span class="required">*</span></label>
+            <input type="text" id="member_${i}_id" name="member_${i}_id" required pattern="[0-9]{9,12}">
+             <div class="validation-error">Vui lòng nhập CCCD/CMND hợp lệ (9 hoặc 12 số).</div>
+         </div>
+          <div class="field">
+            <label for="member_${i}_dob">Ngày/tháng/năm sinh<span class="required">*</span></label>
+            <input type="date" id="member_${i}_dob" name="member_${i}_dob" required>
+            <div class="validation-error">Vui lòng chọn ngày sinh.</div>
+          </div>
+        `;
+        if (i === 1 && studentNameInput) {
+            const memberNameInput = memberDiv.querySelector(`#member_${i}_name`);
+            if (studentNameInput.value) {
+                memberNameInput.value = studentNameInput.value;
+            }
+        }
+        membersInfoContainer.appendChild(memberDiv);
+      }
+      if (studentNameInput) {
+          studentNameInput.removeEventListener("input", syncStudentNameToMember1);
+          studentNameInput.addEventListener("input", syncStudentNameToMember1);
+      }
+      addValidationListeners(membersInfoContainer);
+    }
+
+    function syncStudentNameToMember1(e) {
+        const firstMemberNameInput = membersInfoContainer.querySelector("#member_1_name");
+        if(firstMemberNameInput) firstMemberNameInput.value = e.target.value;
+    }
+
+    function changeCount(delta) {
+      let count = parseInt(numPeopleInput.value, 10) + delta;
+      if (count < 1) count = 1;
+      if (count > 10) count = 10;
+      numPeopleInput.value = count;
+      updateMembers(count);
+    }
+
+    function validateCurrentStep() {
+        const currentStepElement = steps[currentStepIndex];
+        const inputs = currentStepElement.querySelectorAll("input[required], select[required], textarea[required]");
+        let isStepValid = true;
+
+        clearValidationErrors(currentStepElement);
+
+        inputs.forEach(input => {
+            let isFieldValid = true;
+            const fieldContainer = input.closest(".field");
+            const errorDiv = fieldContainer ? fieldContainer.querySelector(".validation-error") : null;
+
+            if (input.type === "hidden" && input.name === "ride_with_organizer") {
+                 if (!input.value) {
+                     isFieldValid = false;
+                     input.classList.add("invalid");
+                 } else {
+                     input.classList.remove("invalid");
+                 }
+            } else if (!input.checkValidity()) {
+                isFieldValid = false;
+                input.classList.add("invalid");
+            } else {
+                 input.classList.remove("invalid");
+            }
+
+            if (!isFieldValid) {
+                isStepValid = false;
+                if (errorDiv) errorDiv.style.display = "block";
+            } else {
+                 if (errorDiv) errorDiv.style.display = "none";
+            }
+        });
+        return isStepValid;
+    }
+
+    function clearValidationErrors(container) {
+        const errors = container.querySelectorAll(".validation-error");
+        errors.forEach(error => error.style.display = "none");
+        const invalidInputs = container.querySelectorAll(".invalid");
+        invalidInputs.forEach(input => input.classList.remove("invalid"));
+    }
+    function clearAllValidationErrors() {
+        clearValidationErrors(tripForm);
+    }
+
+    function addValidationListeners(container) {
+        const inputs = container.querySelectorAll("input[required], select[required], textarea[required]");
+        inputs.forEach(input => {
+            const eventType = (input.type === "date" || input.tagName === "SELECT") ? "change" : "input";
+            input.addEventListener(eventType, () => {
+                const fieldContainer = input.closest(".field");
+                const errorDiv = fieldContainer ? fieldContainer.querySelector(".validation-error") : null;
+                if (input.checkValidity()) {
+                    if (errorDiv) errorDiv.style.display = "none";
+                    input.classList.remove("invalid");
+                } else {
+                    // No action needed here
+                }
+            });
+        });
+         toggleBtns.forEach(btn => {
+             btn.addEventListener("click", () => {
+                 const fieldContainer = rideSelectInput.closest(".field");
+                 const errorDiv = fieldContainer ? fieldContainer.querySelector(".validation-error") : null;
+                 if (errorDiv) errorDiv.style.display = "none";
+                 rideSelectInput.classList.remove("invalid");
+             });
+         });
+    }
+
+    function submitForm() {
+        nextBtn.disabled = true;
+        nextBtn.textContent = "Đang gửi...";
+
+        const formData = new FormData(tripForm);
+        const params = new URLSearchParams();
+        for (const pair of formData.entries()) {
+            if (pair[0] !== "comments") {
+                 params.append(pair[0], pair[1]);
+            }
+        }
+
+        fetch(APP_SCRIPT_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: params.toString(),
+            mode: "no-cors"
+        })
+        .then(response => {
+            console.log("Submission fetch completed (no-cors). Assuming success.");
+            successModal.classList.add("active");
+        })
+        .catch((error) => {
+            console.error("Submission Fetch Error:", error);
+            errorModal.classList.add("active");
+        })
+        .finally(() => {
+             if (errorModal.classList.contains("active")) {
+                 nextBtn.disabled = false;
+                 nextBtn.textContent = "Gửi đăng ký";
+             }
+        });
+    }
+
+    // --- Event Listeners --- 
+
+    btnStart.addEventListener("click", showForm);
+
+    nextBtn.addEventListener("click", () => {
+      if (!validateCurrentStep()) {
+        warningModal.classList.add("active");
+        return;
+      }
+      if (currentStepIndex < steps.length - 1) {
+        const previousIndex = currentStepIndex;
+        currentStepIndex++;
+        updateStepClasses(previousIndex);
+        updateProgressIndicator();
+        updateNavigationButtons();
+      } else {
+        submitForm();
+      }
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (currentStepIndex > 0) {
+        const previousIndex = currentStepIndex;
+        currentStepIndex--;
+        updateStepClasses(previousIndex);
+        updateProgressIndicator();
+        updateNavigationButtons();
+        clearValidationErrors(steps[currentStepIndex + 1]);
+      } else {
+        hideForm();
+      }
+    });
+
+    closeWarn.addEventListener("click", () => warningModal.classList.remove("active"));
+    closeError.addEventListener("click", () => errorModal.classList.remove("active"));
+    closeModal.addEventListener("click", () => {
+      successModal.classList.remove("active");
+      resetForm();
+      hideForm();
+    });
+
+    let holdIntervalPlus, holdIntervalMinus;
+    const clearHoldIntervals = () => { clearInterval(holdIntervalPlus); clearInterval(holdIntervalMinus); };
+    plusBtn.addEventListener("mousedown", () => { changeCount(1); holdIntervalPlus = setInterval(() => changeCount(1), 150); });
+    minusBtn.addEventListener("mousedown", () => { changeCount(-1); holdIntervalMinus = setInterval(() => changeCount(-1), 150); });
+    document.addEventListener("mouseup", clearHoldIntervals);
+    document.addEventListener("mouseleave", clearHoldIntervals);
+    plusBtn.addEventListener("mouseleave", () => clearInterval(holdIntervalPlus));
+    minusBtn.addEventListener("mouseleave", () => clearInterval(holdIntervalMinus));
+
+    toggleBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        toggleBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        rideSelectInput.value = btn.dataset.value;
+        const fieldContainer = rideSelectInput.closest(".field");
+        const errorDiv = fieldContainer ? fieldContainer.querySelector(".validation-error") : null;
+        if (errorDiv) errorDiv.style.display = "none";
+        rideSelectInput.classList.remove("invalid");
+      });
+    });
+
+    // --- Initialization --- 
+    initializeForm();
+
+  </script>
+</body>
+</html>
